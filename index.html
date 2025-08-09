@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Join WhatsApp Group</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #412beac8, #83048da1);
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+    .form-step {
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        width: 320px;
+        text-align: center;
+        display: none;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+    .form-step h2 {
+        margin-bottom: 15px;
+        color: #ac05fa;
+    }
+    input, select, button {
+        width: 100%;
+        padding: 10px;
+        margin: 8px 0;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 14px;
+    }
+    button {
+        background: #ac05fa;
+        color: white;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    button:disabled {
+        background: #999;
+        cursor: not-allowed;
+    }
+    button:hover:enabled {
+        background: #0c1a98;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+</head>
+<body>
+
+<div id="step1" class="form-step" style="display:block;">
+    <h2>Step 1: Name</h2>
+    <input type="text" id="name" placeholder="Enter your name" required>
+    <button onclick="nextStep(2)">Next</button>
+</div>
+
+<div id="step2" class="form-step">
+    <h2>Step 2: Age</h2>
+    <input type="number" id="age" placeholder="Enter your age" required>
+    <button onclick="nextStep(3)">Next</button>
+</div>
+
+<div id="step3" class="form-step">
+    <h2>Step 3: Gender</h2>
+    <select id="gender" required>
+        <option value="">Select gender</option>
+        <option>Male</option>
+        <option>Female</option>
+        <option>Other</option>
+    </select>
+    <button onclick="nextStep(4)">Next</button>
+</div>
+
+<div id="step4" class="form-step">
+    <h2>Step 4: Mobile Number</h2>
+    <input type="tel" id="mobile" placeholder="Enter mobile number" required>
+    <button id="joinBtn" onclick="finishForm()">Join WhatsApp</button>
+</div>
+
+<script>
+let userData = {};
+
+function nextStep(step) {
+    let currentStep = step - 1;
+
+    if (currentStep === 1) userData.name = document.getElementById("name").value.trim();
+    if (currentStep === 2) userData.age = document.getElementById("age").value.trim();
+    if (currentStep === 3) userData.gender = document.getElementById("gender").value;
+
+    if (!Object.values(userData)[currentStep - 1]) {
+        alert("Please fill the field before continuing.");
+        return;
+    }
+
+    document.getElementById(`step${currentStep}`).style.display = "none";
+    document.getElementById(`step${step}`).style.display = "block";
+}
+
+function finishForm() {
+    userData.mobile = document.getElementById("mobile").value.trim();
+
+    if (!userData.mobile) {
+        alert("Please enter your mobile number.");
+        return;
+    }
+
+    let joinBtn = document.getElementById("joinBtn");
+    joinBtn.disabled = true;
+    joinBtn.textContent = "Processing...";
+
+    fetch("https://script.google.com/macros/s/AKfycbzPQXLPP_NqGu1s9SyoaVfE0Rk3XUcRObycaBpD5UcSrRuqnmid7aZK7_luI_m3IWqccQ/exec", {
+        method: "POST",
+        mode: "no-cors",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(userData)
+    })
+    .then(() => {
+        let whatsappGroupLink = "https://chat.whatsapp.com/Bx1DAjiOSDt6hsczVlH2dm";
+        window.location.href = whatsappGroupLink;
+    })
+    .catch(err => {
+        console.error(err);
+        joinBtn.disabled = false;
+        joinBtn.textContent = "Join WhatsApp";
+    });
+}
+</script>
+
+</body>
+</html>
